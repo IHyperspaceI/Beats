@@ -157,7 +157,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 300, y: 200}
+  m_AnchoredPosition: {x: 348.2, y: 215.19}
   m_SizeDelta: {x: 100, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &91773510
@@ -181,7 +181,7 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_NormalColor: {r: 0.07058824, g: 0.0627451, b: 0.0627451, a: 0.12156863}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -221,6 +221,9 @@ MonoBehaviour:
       m_Image: {fileID: 0}
       m_Color: {r: 1, g: 1, b: 1, a: 1}
     - m_Text: Lower Circle
+      m_Image: {fileID: 0}
+      m_Color: {r: 1, g: 1, b: 1, a: 1}
+    - m_Text: Particles
       m_Image: {fileID: 0}
       m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_OnValueChanged:
@@ -306,15 +309,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1037d3df3c1a241a99e2a371e6d897a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sampleCubePrefab: {fileID: 5292775783563422877, guid: 59911ca25817e4f7b8cde4e4c004aaff, type: 3}
-  peer: {fileID: 1292812343}
+  prefab: {fileID: 0}
+  audioSource: {fileID: 0}
+  numSamples: 0
+  threshold: 0
+  boost: 100
+  range: 0
+  framerate: 120
+  avgFrameRate: 0
   yScale: 2
   xScale: 4
   radius: 2
   innerRadius: 1
   frequencyAdjustment: 25
-  framerate: 120
-  avgFrameRate: 0
 --- !u!4 &122465067
 Transform:
   m_ObjectHideFlags: 0
@@ -475,8 +482,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
-  m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+    rgba: 872415231
+  m_fontColor: {r: 1, g: 1, b: 1, a: 0.2}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -715,10 +722,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioSource: {fileID: 627644159}
-  emitters: {fileID: 483191444}
-  lines: {fileID: 2091407370}
-  cubes: {fileID: 1064638293}
-  lowerCubes: {fileID: 1007300583}
+  scripts:
+  - {fileID: 1064638293}
+  - {fileID: 2091407370}
+  - {fileID: 483191444}
+  - {fileID: 1007300583}
+  - {fileID: 1070738752}
 --- !u!114 &393385619
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -869,7 +878,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_fontColor: {r: 1, g: 1, b: 1, a: 0.2}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1142,7 +1151,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.07058824, g: 0.06666667, b: 0.07058824, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1268,7 +1277,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.2}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1322,16 +1331,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb3bc64665eec4b9bb1376437cd7f899, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sampleCubePrefab: {fileID: 6166505188790343937, guid: 62f3f0e0232874eb1890323ce3e1e0ca, type: 3}
-  peer: {fileID: 627644159}
-  xScale: 0.075
+  prefab: {fileID: 6166505188790343937, guid: 62f3f0e0232874eb1890323ce3e1e0ca, type: 3}
+  audioSource: {fileID: 627644159}
+  numSamples: 64
   threshold: 0.4
   boost: 1000
+  range: 1
+  framerate: 120
+  avgFrameRate: 87
+  xScale: 0.075
   rate: 30
   lifetime: 8
   speed: 8
-  framerate: 120
-  avgFrameRate: 87
 --- !u!4 &483191445
 Transform:
   m_ObjectHideFlags: 0
@@ -1540,6 +1551,7 @@ MonoBehaviour:
   - 0
   - 0
   boost: 0.15
+  averageAmp: 0
 --- !u!4 &627644160
 Transform:
   m_ObjectHideFlags: 0
@@ -1664,7 +1676,7 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_NormalColor: {r: 0.07058824, g: 0.0627451, b: 0.0627451, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -1720,17 +1732,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: defee56435a0f446c99bc98929c7d79d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sampleCubePrefab: {fileID: 5292775783563422877, guid: 59911ca25817e4f7b8cde4e4c004aaff, type: 3}
-  peer: {fileID: 627644159}
-  yScale: 0.13
-  xScale: 4
-  radius: 20.73
-  innerRadius: 1
+  prefab: {fileID: 5292775783563422877, guid: 59911ca25817e4f7b8cde4e4c004aaff, type: 3}
+  audioSource: {fileID: 627644159}
+  numSamples: 512
   threshold: 0
   boost: 100
   range: 0.33
   framerate: 120
   avgFrameRate: 77
+  yScale: 0.13
+  xScale: 4
+  radius: 20.73
+  innerRadius: 1
 --- !u!4 &1007300584
 Transform:
   m_ObjectHideFlags: 0
@@ -1850,17 +1863,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: defee56435a0f446c99bc98929c7d79d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sampleCubePrefab: {fileID: 5292775783563422877, guid: 59911ca25817e4f7b8cde4e4c004aaff, type: 3}
-  peer: {fileID: 627644159}
-  yScale: 0.13
-  xScale: 4
-  radius: 20.73
-  innerRadius: 1
+  prefab: {fileID: 5292775783563422877, guid: 59911ca25817e4f7b8cde4e4c004aaff, type: 3}
+  audioSource: {fileID: 627644159}
+  numSamples: 512
   threshold: 0
   boost: 100
   range: 1
   framerate: 120
   avgFrameRate: 69
+  yScale: 0.13
+  xScale: 4
+  radius: 20.73
+  innerRadius: 1
 --- !u!4 &1064638294
 Transform:
   m_ObjectHideFlags: 0
@@ -1871,6 +1885,66 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1070738751
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1070738753}
+  - component: {fileID: 1070738752}
+  m_Layer: 0
+  m_Name: 5-Particles
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1070738752
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1070738751}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e8c9bddac893465bbec35a88eb802cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 7816985731354753574, guid: 9766b0d6b2c2b446cae0c94b7eac44e0, type: 3}
+  audioSource: {fileID: 627644159}
+  numSamples: 256
+  threshold: 0.001
+  boost: 100
+  range: 0.33
+  framerate: 120
+  avgFrameRate: 60
+  yScale: 0.015
+  xScale: 0.025
+  zScale: 0.005
+  minSize: 0.005
+  speed: 0.2
+  size: 3.5
+  lifetime: 0.25
+  poolSize: 2500
+--- !u!4 &1070738753
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1070738751}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2001,7 +2075,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+  m_Color: {r: 0.07058824, g: 0.0627451, b: 0.0627451, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2163,7 +2237,7 @@ AudioSource:
   m_Enabled: 0
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 94b53055362434100b5dd9ffb545bbb8, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 94b53055362434100b5dd9ffb545bbb8, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -4505,7 +4579,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.07058824, g: 0.0627451, b: 0.0627451, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -4647,17 +4721,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e13c2e5c4ca324634a7e1d90ecceaf4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sampleCubePrefab: {fileID: 6166505188790343937, guid: 62f3f0e0232874eb1890323ce3e1e0ca, type: 3}
-  peer: {fileID: 627644159}
-  xScale: 0.06
+  prefab: {fileID: 6166505188790343937, guid: 62f3f0e0232874eb1890323ce3e1e0ca, type: 3}
+  audioSource: {fileID: 627644159}
+  numSamples: 64
   threshold: 0
   boost: 1000
+  range: 1
+  framerate: 120
+  avgFrameRate: 86
+  xScale: 0.06
   rate: 10
   lifetime: 8
   speed: 8
   numLines: 8
-  framerate: 120
-  avgFrameRate: 86
 --- !u!4 &2091407371
 Transform:
   m_ObjectHideFlags: 0
@@ -4673,6 +4749,63 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &7793269511436480464
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1533967040947417267, guid: 9766b0d6b2c2b446cae0c94b7eac44e0, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 3.3354535
+      objectReference: {fileID: 0}
+    - target: {fileID: 1533967040947417267, guid: 9766b0d6b2c2b446cae0c94b7eac44e0, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.02341859
+      objectReference: {fileID: 0}
+    - target: {fileID: 1533967040947417267, guid: 9766b0d6b2c2b446cae0c94b7eac44e0, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -2.8016973
+      objectReference: {fileID: 0}
+    - target: {fileID: 1533967040947417267, guid: 9766b0d6b2c2b446cae0c94b7eac44e0, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1533967040947417267, guid: 9766b0d6b2c2b446cae0c94b7eac44e0, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1533967040947417267, guid: 9766b0d6b2c2b446cae0c94b7eac44e0, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1533967040947417267, guid: 9766b0d6b2c2b446cae0c94b7eac44e0, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1533967040947417267, guid: 9766b0d6b2c2b446cae0c94b7eac44e0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1533967040947417267, guid: 9766b0d6b2c2b446cae0c94b7eac44e0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1533967040947417267, guid: 9766b0d6b2c2b446cae0c94b7eac44e0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7816985731354753574, guid: 9766b0d6b2c2b446cae0c94b7eac44e0, type: 3}
+      propertyPath: m_Name
+      value: SphereParticle
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 9766b0d6b2c2b446cae0c94b7eac44e0, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -4688,5 +4821,7 @@ SceneRoots:
   - {fileID: 2091407371}
   - {fileID: 483191445}
   - {fileID: 1007300584}
+  - {fileID: 1070738753}
   - {fileID: 393385622}
   - {fileID: 221810390}
+  - {fileID: 7793269511436480464}

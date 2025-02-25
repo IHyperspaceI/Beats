@@ -2,30 +2,23 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Lines : MonoBehaviour
+public class Lines : AbstractVisualizer
 {
-    public GameObject sampleCubePrefab;
-    public GetMacAudio peer;
     public float xScale;
     GameObject[] cubes;
-    public float threshold;
-    public float boost = 100;
     public float rate;
     public float lifetime;
     public float speed;
 
     public int numLines = 4;
 
-    public int framerate = 60;
-    public int avgFrameRate;
-
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void OnEnable()
     {
-        cubes = new GameObject[(int) (peer.samples.Length / 1.5f)];
+        cubes = new GameObject[(int) (audioSource.samples.Length / 1.5f)];
 
         for (int i = 0; i < numLines; i++) {
-            GameObject instanceSampleCube = (GameObject) Instantiate(sampleCubePrefab);
+            GameObject instanceSampleCube = (GameObject) Instantiate(prefab);
             instanceSampleCube.transform.position = transform.position + Vector3.forward * xScale * i;
             instanceSampleCube.transform.rotation = transform.rotation;
             instanceSampleCube.transform.parent = transform;
@@ -68,12 +61,12 @@ public class Lines : MonoBehaviour
     void Update()
     {
         for (int i = 0; i < numLines; i++) {
-            cubes[i].transform.position = transform.position + Vector3.forward * xScale * FindLoudestFrequencies(peer.samples, numLines)[i];
+            cubes[i].transform.position = transform.position + Vector3.forward * xScale * FindLoudestFrequencies(audioSource.samples, numLines)[i];
 
             var emission = cubes[i].GetComponent<ParticleSystem>().emission;
             emission.rateOverTime = rate;
             
-            float hue = (float)FindLoudestFrequencies(peer.samples, numLines)[i] / peer.samples.Length; // Normalize between 0 and 1
+            float hue = (float)FindLoudestFrequencies(audioSource.samples, numLines)[i] / audioSource.samples.Length; // Normalize between 0 and 1
             Color color = Color.HSVToRGB(hue, 1f, 1f); // Full saturation and brightness
 
             cubes[i].GetComponent<Renderer>().material.color = color;

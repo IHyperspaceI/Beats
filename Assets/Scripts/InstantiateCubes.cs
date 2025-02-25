@@ -1,10 +1,8 @@
 using Unity.Mathematics;
 using UnityEngine;
 
-public class InstantiateCubes : MonoBehaviour
+public class InstantiateCubes : AbstractVisualizer
 {
-    public GameObject sampleCubePrefab;
-    public AudioPeer peer;
     public float yScale;
     public float xScale;
     public float radius;
@@ -13,20 +11,17 @@ public class InstantiateCubes : MonoBehaviour
     private float[] normalizedSamples;
     public float frequencyAdjustment;
 
-    public int framerate = 60;
-    public int avgFrameRate;
-
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        cubes = new GameObject[peer.samples.Length];
+        cubes = new GameObject[audioSource.samples.Length];
 
         for (int i = 0; i < cubes.Length; i++) {
-            GameObject instanceSampleCube = (GameObject) Instantiate(sampleCubePrefab);
+            GameObject instanceSampleCube = (GameObject) Instantiate(prefab);
             instanceSampleCube.transform.position = this.transform.position;
             instanceSampleCube.transform.parent = this.transform;
             instanceSampleCube.name = "Sample-" + i;
-            this.transform.eulerAngles = new Vector3(0, 360f / (float) peer.samples.Length * i, 0);
+            this.transform.eulerAngles = new Vector3(0, 360f / (float) audioSource.samples.Length * i, 0);
             instanceSampleCube.transform.position = Vector3.forward * innerRadius;
 
             float hue = (float)i / cubes.Length; // Normalize between 0 and 1
@@ -36,7 +31,7 @@ public class InstantiateCubes : MonoBehaviour
             cubes[i] = instanceSampleCube;
         }
 
-        normalizedSamples = Normalize(peer.samples);
+        normalizedSamples = Normalize(audioSource.samples);
     }
     
     public static float[] Normalize(float[] values)
@@ -68,7 +63,7 @@ public class InstantiateCubes : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        normalizedSamples = Normalize(peer.samples);
+        normalizedSamples = Normalize(audioSource.samples);
 
         for (int i = 0; i < cubes.Length; i++) {
             if (cubes != null) {
@@ -82,9 +77,9 @@ public class InstantiateCubes : MonoBehaviour
 
                 cubes[i].transform.localScale = new Vector3
                 (
-                    0.5f * xScale * (math.PI / peer.samples.Length),
-                    (peer.samples[i] * yScale) * (frequencyAdjustment * i) + 0.1f,
-                    (radius * peer.samples[i]) * (frequencyAdjustment * i) + 0.01f
+                    0.5f * xScale * (math.PI / audioSource.samples.Length),
+                    (audioSource.samples[i] * yScale) * (frequencyAdjustment * i) + 0.1f,
+                    (radius * audioSource.samples[i]) * (frequencyAdjustment * i) + 0.01f
                 );
             }
         }

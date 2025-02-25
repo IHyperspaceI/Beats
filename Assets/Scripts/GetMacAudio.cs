@@ -5,6 +5,7 @@ public class GetMacAudio : MonoBehaviour
     private AudioSource audioSource;
     public float[] samples = new float[512];
     public float boost;
+    public float averageAmp;
 
     void OnEnable()
     {
@@ -25,12 +26,18 @@ public class GetMacAudio : MonoBehaviour
     void GetSpectrumAudioSource() {
         audioSource.GetSpectrumData(samples, 0, FFTWindow.BlackmanHarris);
 
+	float sum = 0;
+
         for (int i = 0; i < samples.Length; i++)
         {
             float frequency = i * (44100 / 2f) / samples.Length; // Get frequency of this index
             float scalingFactor = Mathf.Pow(i + 1, boost); // Exponential boost
 
             samples[i] *= scalingFactor; // Apply scaling to balance high frequencies
+	    
+	        sum += samples[i];
         }
+
+	    averageAmp = sum / (float) samples.Length;
     }
 }

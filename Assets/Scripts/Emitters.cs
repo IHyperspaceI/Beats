@@ -1,28 +1,21 @@
 using Unity.IntegerTime;
 using UnityEngine;
 
-public class Emitters : MonoBehaviour
+public class Emitters : AbstractVisualizer
 {
-    public GameObject sampleCubePrefab;
-    public GetMacAudio peer;
     public float xScale;
     GameObject[] cubes;
-    public float threshold;
-    public float boost = 100;
     public float rate;
     public float lifetime;
     public float speed;
 
-    public int framerate = 60;
-    public int avgFrameRate;
-
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void OnEnable()
     {
-        cubes = new GameObject[(int) (peer.samples.Length / 1.5f)];
+        cubes = new GameObject[(int) (audioSource.samples.Length / 1.5f)];
 
         for (int i = 0; i < cubes.Length; i++) {
-            GameObject instanceSampleCube = (GameObject) Instantiate(sampleCubePrefab);
+            GameObject instanceSampleCube = (GameObject) Instantiate(prefab);
             instanceSampleCube.transform.position = transform.position + Vector3.forward * xScale * i;
             instanceSampleCube.transform.rotation = transform.rotation;
             instanceSampleCube.transform.parent = transform;
@@ -73,7 +66,7 @@ public class Emitters : MonoBehaviour
                 var emission = cubes[i].GetComponent<ParticleSystem>().emission;
                 emission.rateOverTime = rate;
 
-                if (peer.samples[i] * i * boost >= threshold) {
+                if (audioSource.samples[i] * i * boost >= threshold) {
                     var main = cubes[i].GetComponent<ParticleSystem>().main;
                     main.startLifetime = lifetime;
                     emission.enabled = true;
