@@ -3,120 +3,129 @@ using UnityEngine;
 
 public class Particles : AbstractVisualizer
 {
-    public float yScale;
-    public float xScale;
-    public float zScale;
-    public float minSize;
-    public float speed;
-    public float size;
-    public float lifetime;
+    public float yScale, xScale, zScale, minSize, speed, size, lifetime;
     private Color[] colors;
-
     private GameObject[] particlePool;
-    public int poolSize = 100; 
-    private int poolIndex = 0; 
+    private Renderer[] renderers;
+    private Rigidbody[] rigidbodies;
+    private MaterialPropertyBlock[] materialBlocks;
+    private bool[] isActive;
+    public int poolSize = 100;
+    private int poolIndex = 0;
 
     void OnEnable()
     {
         colors = new Color[(int)(audioSource.samples.Length * range)];
-
         for (int i = 0; i < colors.Length; i++)
         {
-            float hue = (float)i / colors.Length;
-            colors[i] = Color.HSVToRGB(hue, 1f, 1f);
+            colors[i] = Color.HSVToRGB((float)i / colors.Length, 1f, 1f);
         }
 
         particlePool = new GameObject[poolSize];
+        renderers = new Renderer[poolSize];
+        rigidbodies = new Rigidbody[poolSize];
+        isActive = new bool[poolSize];
+        materialBlocks = new MaterialPropertyBlock[poolSize];
+
         for (int i = 0; i < poolSize; i++)
         {
             GameObject particle = Instantiate(prefab);
+            particle.transform.parent = this.transform;
             particle.SetActive(false);
-            SetMaterialTransparent(particle.GetComponent<Renderer>().material); // Set material transparency mode
+            renderers[i] = particle.GetComponent<Renderer>();
+            rigidbodies[i] = particle.GetComponent<Rigidbody>();
+            SetMaterialTransparent(renderers[i].material);
             particlePool[i] = particle;
-        }
-    }
 
-    void Update()
-    {
-        int activeParticles = 0;
-
-        for (int i = 0; i < colors.Length; i++)
-        {
-            if (audioSource.samples[i] * boost >= threshold + audioSource.averageAmp)
-            {
-                if (activeParticles < poolSize)
-                {
-                    SpawnParticle(i);
-                    activeParticles++;
-                }
-            }
+            materialBlocks[i] = new MaterialPropertyBlock();
         }
 
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = framerate;
+    }
 
-        avgFrameRate = (int)(Time.frameCount / Time.time);
+    void Update()
+    {
+        for (int i = 0; i < colors.Length; i++)
+        {
+            if (audioSource.samples[i] * boost >= threshold + audioSource.averageAmp)
+            {
+                SpawnParticle(i);
+            }
+        }
     }
 
     private void SpawnParticle(int index)
     {
-        if (audioSource.samples[index] * boost * size < minSize) return;
-        
+        float sampleValue = audioSource.samples[index] * boost * size;
+        if (sampleValue < minSize) return;
+
         GameObject particle = particlePool[poolIndex];
 
+        isActive[poolIndex] = true;
         poolIndex = (poolIndex + 1) % poolSize;
 
         particle.SetActive(true);
+
         Vector3 position = new Vector3(
-            UnityEngine.Random.Range(-xScale, xScale) * index, 
-            UnityEngine.Random.Range(-zScale, zScale) * index + this.transform.position.y, 
-            UnityEngine.Random.Range(-yScale, yScale) * index
-        );
-        Vector3 direction = new Vector3(
-            UnityEngine.Random.Range(-1.0f, 1.0f), 
-            UnityEngine.Random.Range(-1, 1), 
-            UnityEngine.Random.Range(-1, 1)
-        );
-        Vector3 scale = new Vector3(
-            audioSource.samples[index] * boost * size, 
-            0.01f, 
-            audioSource.samples[index] * boost * size
+            Random.Range(-xScale, xScale) * index,
+            Random.Range(-yScale, yScale) + transform.position.y,
+            Random.Range(-zScale, zScale) * index
         );
 
+        Vector3 scale = new Vector3(sampleValue, 0.01f, sampleValue);
         particle.transform.position = position;
         particle.transform.localScale = scale;
-        Material mat = particle.GetComponent<Renderer>().material;
-        mat.color = colors[index];
-        particle.GetComponent<Rigidbody>().linearVelocity = direction * speed;
 
-        StartCoroutine(FadeAndDeactivate(particle, lifetime, mat));
+        rigidbodies[poolIndex].linearVelocity = position * speed;
+
+        // Apply color using MaterialPropertyBlock
+        MaterialPropertyBlock block = materialBlocks[poolIndex];
+        Color startColor = colors[index];
+        startColor.a = 1f; // Ensure alpha starts fully visible
+        block.SetColor("_Color", startColor);
+        block.SetColor("_BaseColor", startColor); // Fix for URP/HDRP
+        renderers[poolIndex].SetPropertyBlock(block);
+
+        StartCoroutine(FadeAndDeactivate(poolIndex, lifetime));
     }
 
-    private IEnumerator FadeAndDeactivate(GameObject particle, float duration, Material mat)
+    private IEnumerator FadeAndDeactivate(int index, float duration)
     {
+        MaterialPropertyBlock block = materialBlocks[index];
         float elapsedTime = 0;
-        Color startColor = mat.color;
+
+        Color startColor;
+        renderers[index].GetPropertyBlock(block);
+        startColor = block.GetColor("_Color");
 
         while (elapsedTime < duration)
         {
             elapsedTime += Time.deltaTime;
             float fadeAmount = 1 - (elapsedTime / duration);
-            mat.color = new Color(startColor.r, startColor.g, startColor.b, fadeAmount);
+            Color fadedColor = new Color(startColor.r, startColor.g, startColor.b, fadeAmount);
+
+            block.SetColor("_Color", fadedColor);
+            block.SetColor("_BaseColor", fadedColor); // Ensure fading works across pipelines
+            renderers[index].SetPropertyBlock(block);
+
             yield return null;
         }
 
-        particle.SetActive(false);
+        particlePool[index].SetActive(false);
+        isActive[index] = false;
     }
 
     private void SetMaterialTransparent(Material mat)
     {
-        mat.SetFloat("_Mode", 2);  // Fade mode
+        mat.SetOverrideTag("RenderType", "Transparent");
+        mat.SetFloat("_Mode", 2); // Fade mode for Standard Shader
         mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
         mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
         mat.SetInt("_ZWrite", 0);
         mat.DisableKeyword("_ALPHATEST_ON");
         mat.EnableKeyword("_ALPHABLEND_ON");
         mat.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-        mat.renderQueue = 3000;  // Transparent queue
+        mat.renderQueue = 3000;
     }
 }
